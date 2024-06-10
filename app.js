@@ -1,27 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeedMap - Game Mods & Resources</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <header>
-        <h1>SeedMap</h1>
-    </header>
-    <main>
-        <section id="upload">
-            <input type="file" id="fileInput" multiple>
-            <button onclick="uploadFiles()"><i class="fas fa-upload"></i> Upload</button>
-        </section>
-        <section id="files">
-            <h2>Available Files</h2>
-            <ul id="filesList"></ul>
-        </section>
-    </main>
-    <script src="app.js"></script>
-</body>
-</html>
+const filesList = document.getElementById('filesList');
+let filesArray = [];
 
+function uploadFiles() {
+    const fileInput = document.getElementById('fileInput');
+    const files = Array.from(fileInput.files);
+
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const fileData = {
+                name: file.name,
+                url: e.target.result
+            };
+            filesArray.push(fileData);
+            displayFiles();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    fileInput.value = ''; // Clear the input
+}
+
+function displayFiles() {
+    filesList.innerHTML = ''; // Clear previous file list
+
+    filesArray.forEach(file => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = file.url;
+        link.textContent = file.name;
+        link.download = file.name;
+
+        const downloadBtn = document.createElement('button');
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
+        downloadBtn.onclick = () => {
+            const a = document.createElement('a');
+            a.href = file.url;
+            a.download = file.name;
+            a.click();
+        };
+
+        li.appendChild(link);
+        li.appendChild(downloadBtn);
+        filesList.appendChild(li);
+    });
+}
